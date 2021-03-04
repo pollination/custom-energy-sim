@@ -1,2 +1,3 @@
 # custom-energy-sim
-Run an energy simulation with custom Simulation Parameters
+
+Run an energy simulation with custom Simulation Parameters.
