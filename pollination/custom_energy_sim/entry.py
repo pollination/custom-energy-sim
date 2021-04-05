@@ -31,7 +31,7 @@ class CustomEnergySimEntryPoint(DAG):
         'simulation. Note that this SimulationParameter should usually contain '
         'design days. If it does not, the annual EPW data be used to generate '
         'default design days, which may not be as representative of the climate as '
-        'those from a DDY file.', extensions=['json'],
+        'those from a DDY file.', extensions=['json'], optional=True,
         alias=energy_simulation_parameter_input
     )
 
