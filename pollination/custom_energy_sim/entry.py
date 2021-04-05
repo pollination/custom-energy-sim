@@ -1,14 +1,13 @@
 from pollination_dsl.dag import Inputs, DAG, task, Outputs
 from dataclasses import dataclass
 from typing import Dict, List
-from pollination.honeybee_energy.settings import SimParDefault
 from pollination.honeybee_energy.simulate import SimulateModel
-from pollination.honeybee_energy.result import EnergyUseIntensity
 
 
 # input/output alias
 from pollination.alias.inputs.model import hbjson_model_input
-from pollination.alias.inputs.simulation import energy_simulation_parameter_input
+from pollination.alias.inputs.simulation import energy_simulation_parameter_input, \
+    idf_additional_strings_input
 
 
 @dataclass
@@ -36,9 +35,20 @@ class CustomEnergySimEntryPoint(DAG):
         alias=energy_simulation_parameter_input
     )
 
+    additional_string = Inputs.str(
+        description='An additional text string to be appended to the IDF before '
+        'simulation. The input should include complete EnergyPlus objects as a '
+        'single string following the IDF format. This input can be used to include '
+        'EnergyPlus objects that are not currently supported by honeybee.',
+        default='', alias=idf_additional_strings_input
+    )
+
     # tasks
     @task(template=SimulateModel)
-    def run_simulation(self, model=model, epw=epw, sim_par=sim_par) -> List[Dict]:
+    def run_simulation(
+        self, model=model, epw=epw, sim_par=sim_par,
+        additional_string=additional_string
+    ) -> List[Dict]:
         return [
             {'from': SimulateModel()._outputs.idf, 'to': 'model.idf'},
             {'from': SimulateModel()._outputs.sql, 'to': 'eplusout.sql'},
