@@ -69,7 +69,7 @@ class CustomEnergySimEntryPoint(DAG):
 
     zsz = Outputs.file(
         source='epluszsz.csv', description='The result CSV with the zone loads '
-        'over the design day output by the simulation.'
+        'over the design day output by the simulation.', optional=True
     )
 
     html = Outputs.file(
