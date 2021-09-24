@@ -6,8 +6,9 @@ from pollination.honeybee_energy.simulate import SimulateModel
 
 # input/output alias
 from pollination.alias.inputs.model import hbjson_model_input
+from pollination.alias.inputs.ddy import ddy_input
 from pollination.alias.inputs.simulation import energy_simulation_parameter_input, \
-    idf_additional_strings_input
+    idf_additional_strings_input, measures_input
 
 
 @dataclass
@@ -26,28 +27,38 @@ class CustomEnergySimEntryPoint(DAG):
         extensions=['epw']
     )
 
+    ddy = Inputs.file(
+        description='A DDY file with design days to be used for the initial '
+        'sizing calculation.', extensions=['ddy'],
+        alias=ddy_input
+    )
+
     sim_par = Inputs.file(
         description='SimulationParameter JSON that describes the settings for the '
-        'simulation. Note that this SimulationParameter should usually contain '
-        'design days. If it does not, the annual EPW data be used to generate '
-        'default design days, which may not be as representative of the climate as '
-        'those from a DDY file.', extensions=['json'], optional=True,
+        'simulation.', path='sim-par.json', extensions=['json'], optional=True,
         alias=energy_simulation_parameter_input
+    )
+
+    measures = Inputs.folder(
+        description='A folder containing an OSW JSON be used as the base for the '
+        'execution of the OpenStuduo CLI. This folder must also contain all of the '
+        'measures that are referenced within the OSW.', path='measures', optional=True,
+        alias=measures_input
     )
 
     additional_string = Inputs.str(
         description='An additional text string to be appended to the IDF before '
         'simulation. The input should include complete EnergyPlus objects as a '
         'single string following the IDF format. This input can be used to include '
-        'EnergyPlus objects that are not currently supported by honeybee.',
-        default='', alias=idf_additional_strings_input
+        'EnergyPlus objects that are not currently supported by honeybee.', default='',
+        alias=idf_additional_strings_input
     )
 
     # tasks
     @task(template=SimulateModel)
     def run_simulation(
-        self, model=model, epw=epw, sim_par=sim_par,
-        additional_string=additional_string
+        self, model=model, epw=epw, ddy=ddy, sim_par=sim_par,
+        measures=measures, additional_string=additional_string
     ) -> List[Dict]:
         return [
             {'from': SimulateModel()._outputs.idf, 'to': 'model.idf'},
