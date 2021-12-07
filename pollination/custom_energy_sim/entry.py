@@ -17,8 +17,8 @@ class CustomEnergySimEntryPoint(DAG):
 
     # inputs
     model = Inputs.file(
-        description='A Honeybee model in HBJSON file format.',
-        extensions=['json', 'hbjson'],
+        description='An energy Model as either a HBJSON, OSM, or IDF.',
+        extensions=['hbjson', 'json', 'osm', 'idf'],
         alias=hbjson_model_input
     )
 
@@ -74,7 +74,7 @@ class CustomEnergySimEntryPoint(DAG):
     )
 
     sql = Outputs.file(
-        source='eplusout.sql',
+        source='eplusout.sql', optional=True,
         description='The result SQL file output by the simulation.'
     )
 
@@ -84,7 +84,7 @@ class CustomEnergySimEntryPoint(DAG):
     )
 
     html = Outputs.file(
-        source='eplustbl.htm',
+        source='eplustbl.htm', optional=True,
         description='The result HTML page with summary reports output by the simulation.'
     )
 
