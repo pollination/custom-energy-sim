@@ -74,7 +74,7 @@ class CustomEnergySimEntryPoint(DAG):
     )
 
     sql = Outputs.file(
-        source='eplusout.sql', optional=True,
+        source='eplusout.sql',
         description='The result SQL file output by the simulation.'
     )
 
@@ -84,7 +84,7 @@ class CustomEnergySimEntryPoint(DAG):
     )
 
     html = Outputs.file(
-        source='eplustbl.htm', optional=True,
+        source='eplustbl.htm',
         description='The result HTML page with summary reports output by the simulation.'
     )
 
